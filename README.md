@@ -1,21 +1,22 @@
-## [PWA-Progressive.Web.App](https://pwa-progressive.web.app) Starter Template
-#### ...with all the good stuff
+## [FundTrace.Web.App](https://fundtrace.web.app)
+#### ...a simple web app to track your expenses and income
 
-![Demo](https://user-images.githubusercontent.com/22216995/159932666-65ad3861-7123-4187-88af-662fbf2a32db.png)
+![Demo](https://github.com/devlucem/FundTrace/assets/22216995/86c5e713-65e7-4fdb-abff-63f093c66185)
 
 ### Features
-- Created with [Svelte](https://svelte.dev/) for easy development
-- JIT development with [Vite](https://vitejs.dev/) for fast builds!
-- Preset [Tailwind CSS](https://tailwindcss.com/) no hassle UI
-- Initialized [Firebase Hosting](https://firebase.google.com/docs/hosting) for testing
-- Preset [PageJS Router](https://www.npmjs.com/package/page) on your pages
+- Built with [PWA](https://PWA-Progressive.Web.App/) and [Firebase](https://firebase.google.com/)
+- Local and Cloud Sync
+- Multi-Currency and Unlimited Accounts
+- Account Sharing
 
 ---
 ### Getting Started
+Clone the repo and run
 ```
-npx degit devlucem/pwa my-app
-cd my-app
 npm install
+cd functions
+npm install
+cd ..
 ```
 ### Configure
 - Create a firebase project or get the firebase config files of the one you already have
@@ -24,22 +25,22 @@ npm install
     authDomain: "",
     projectId: ""
    ```
-- Update the [src/firebase](./src/firebase.js) config files with your above keys
+- Update the [src/firebaseConfig.json](./src/firebaseConfig.json) config files with your above keys
 - To customize your app, go to [public/serviceWorker](./public/serviceWorker.js) and [public/manifest](./public/manifest.json) files and add any files not included in the `assets` and `icons`.
-- More theme and website customizations are available by searching lines with `TODO`
 - You can use [Icons Builder](https://www.pwabuilder.com/imageGenerator) to generate your icons
-#### Test Locally
+
+#### Test Front-End Locally
 `npm run dev`
 
+#### Test Full App Locally
+`firebase serve`
+
 #### Build for production
-`npm run build`
+`npm run d`
 
 ---
 
-Your files will be available in the [dist](./dist) folder.
-To push the files to your firebase hosting, run the commands below. Make sure to fill the dist folder as your hosting one.
-
-`firebase init hosting && firebase deploy`
+Your website app files will be available in the [dist](./dist) folder.
 
 # Made With ♥
 ```
