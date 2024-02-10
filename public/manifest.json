@@ -1,0 +1,19 @@
+{
+  "name": "Fund Trace",
+  "short_name": "FundTrace",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#fee2e2",
+  "theme_color": "#db4938",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png","sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png", "sizes": "512x512"
+    }
+  ]
+}
