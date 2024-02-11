@@ -29,9 +29,36 @@
         current = route[1]
     })); router.start();
 
+
+    let tab, loading, create;
     let accounts = [], accountsListener,
-        transactions = [], transactionsListener,
+        allTransactions = [], transactionsListener,
         circles = [], circlesListener;
+
+    let transactions = [], filter = {
+        filter: () => {
+            if (!filter.search) return transactions = allTransactions;
+            filter.search = filter.search.toLowerCase();
+            filter.tags = filter.search.match(/#(\w+)/g)?.map(tag => tag.slice(1));
+            filter.account = filter.search.match(/account:(\w+)/)?.[1];
+            if (filter.account) filter.accounts = accounts.filter(account => account.name.toLowerCase().includes(filter.account));
+            filter.name = filter.search.replace(/#(\w+)/g, "")
+                .replace(/account:(\w+)/, "")
+                .trim().toLowerCase();
+            transactions = allTransactions.filter(transaction => {
+                if (filter.tags && filter.tags.length) {
+                    let tags = transaction.tags || [];
+                    if (!filter.tags.every(tag => tags.includes(tag))) return false;
+                }
+                if (filter.accounts && filter.accounts.length) {
+                    if (!filter.accounts.some(account => account.id === transaction.account)) return false;
+                }
+                if (filter.name && !transaction.name.toLowerCase().includes(filter.name)) return false;
+                return true;
+            });
+        }
+    };
+    $: if (filter.search) filter.filter();
 
     let user; $: if (user) {
 
@@ -44,7 +71,8 @@
         if (transactionsListener) transactionsListener();
         transactionsListener = listenData("transactions", result => {
             console.log("Transactions", result.length);
-            transactions = result.sort((a, b) => b.time - a.time);
+            allTransactions = result.sort((a, b) => b.time - a.time);
+            filter.filter();
         });
 
         if (circlesListener) circlesListener();
@@ -54,8 +82,6 @@
         });
 
     }
-
-    let tab, loading, create;
 
     const invite = ({detail: {target, email}}) => {
 
@@ -78,44 +104,6 @@
 
     }
 
-    // let search;
-    // let filter = {};
-    // $: if (search) {
-    //     search = search.toLowerCase();
-    //     filter.tags = search.match(/#(\w+)/g)?.map(tag => tag.slice(1));
-    //     filter.account = search.match(/account:(\w+)/)?.[1];
-    //     filter.name = search.replace(/#(\w+)/g, "")
-    //         .replace(/account:(\w+)/, "")
-    //         .trim().toLowerCase();
-    //     console.log(filter);
-    // } else filter = {};
-
-    // let utils = {};
-    // $: if (search) {
-    //
-    //     // Extract tags to an array, amount range, account name, fees range, and date range from string search
-    //     utils.tags = search.match(/#(\w+)/g)?.map(tag => tag.slice(1));
-    //     utils.minAmount = search.match(/min:(\d+)/)?.[1];
-    //     utils.maxAmount = search.match(/max:(\d+)/)?.[1];
-    //     utils.account = search.match(/account:(\w+)/)?.[1];
-    //     utils.minFee = search.match(/minFee:(\d+)/)?.[1];
-    //     utils.maxFee = search.match(/maxFee:(\d+)/)?.[1];
-    //     utils.minDate = search.match(/start:(\d{4}-\d{2}-\d{2})/)?.[1];
-    //     utils.maxDate = search.match(/end:(\d{4}-\d{2}-\d{2})/)?.[1];
-    //
-    //     // Replace all extracted values with empty string
-    //     utils.name = search.replace(/#(\w+)/g, "")
-    //         .replace(/min:(\d+)/, "")
-    //         .replace(/max:(\d+)/, "")
-    //         .replace(/account:(\w+)/, "")
-    //         .replace(/minFee:(\d+)/, "")
-    //         .replace(/maxFee:(\d+)/, "")
-    //         .replace(/start:(\d{4}-\d{2}-\d{2})/, "")
-    //         .replace(/end:(\d{4}-\d{2}-\d{2})/, "")
-    //         .trim().toLowerCase();
-    //
-    //     console.log(utils);
-    // } else utils = {};
 </script>
 
 <svelte:head>
@@ -124,17 +112,31 @@
 
 <main class="flex flex-col h-screen w-screen relative">
 
-    <nav class="flex justify-between px-4 py-2 items-center shadow">
+    <nav class="flex px-4 py-2 items-center shadow">
         <a href="/" class="title">Fund Trace</a>
-        <!--            <div class="flex-1 flex justify-end">-->
-        <!--                <input bind:value={search} type="search" class="input w-full sm:w-1/2 mx-2 min-w-[100px]" placeholder="Search">-->
-        <!--            </div>-->
+
+        <div class="flex-1"></div>
+
+        <div class=" group flex">
+
+            <button class="mr-6 text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-8 h-8">
+                    <path d="M10 3.75a2 2 0 1 0-4 0 2 2 0 0 0 4 0ZM17.25 4.5a.75.75 0 0 0 0-1.5h-5.5a.75.75 0 0 0 0 1.5h5.5ZM5 3.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 .75.75ZM4.25 17a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5h1.5ZM17.25 17a.75.75 0 0 0 0-1.5h-5.5a.75.75 0 0 0 0 1.5h5.5ZM9 10a.75.75 0 0 1-.75.75h-5.5a.75.75 0 0 1 0-1.5h5.5A.75.75 0 0 1 9 10ZM17.25 10.75a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5h1.5ZM14 10a2 2 0 1 0-4 0 2 2 0 0 0 4 0ZM10 16.25a2 2 0 1 0-4 0 2 2 0 0 0 4 0Z" />
+                </svg>
+            </button>
+
+            <div class="card w-[300px] absolute hidden right-24 focus-within:block group-hover:block">
+                <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search">
+            </div>
+
+        </div>
+
         <AuthenticationButton bind:user {loading} on:loading={e=>loading=e.detail}/>
     </nav>
 
     {#key user}
         <section class="flex flex-col flex-1 overflow-auto">
-            <svelte:component this={current} {params} {user} {accounts} {transactions} {circles} on:invite={invite} on:loading={e => loading = e.detail} on:create={e => create = e.detail} bind:tab/>
+            <svelte:component this={current} {params} {user} {accounts} {transactions} {circles} {filter} on:invite={invite} on:loading={e => loading = e.detail} on:create={e => create = e.detail} bind:tab/>
         </section>
     {/key}
 
