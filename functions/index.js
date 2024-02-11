@@ -135,14 +135,18 @@ exports.transactionDeleted = functions.firestore
     });
 
 const sendNotification = (subject, message, to) => {
-
-    nodeMailer.createTransport(emailConfig).sendMail({
-        from: '"FundTrace" <noreply@fundtrace.web.app>',
-        to, subject,
-        text: message,
-        html: message
-    }).catch(console.error).finally(() => {return null});
-
+    console.log("Sending Email", to, subject, message);
+    return new Promise((resolve, reject) => {
+        return nodeMailer.createTransport(emailConfig).sendMail({
+            from: '"FundTrace" <noreply@fundtrace.web.app>',
+            to, subject,
+            text: message,
+            html: message
+        }, (error, info) => {
+            if (error) reject(error);
+            return resolve(info);
+        });
+    });
 }
 
 exports.notification = functions.firestore
@@ -150,8 +154,8 @@ exports.notification = functions.firestore
         const notification = snap.data();
         if (notification.user) return sendNotification(notification.title, notification.message, notification.contact);
         return Promise.all([USERS.where("email", "==", notification.contact).get(), CIRCLES.where(`${notification.from.id}.email`, '==', notification.contact)]).then(([snapshot, circle]) => {
-            const user = snapshot.docs?.[0].data();
-            if ((circle.docs?.length > 0 && notification.target.startsWith("circles/")) || notification.from.email === user.email)
+            const user = snapshot.docs[0]?.data();
+            if ((circle.docs?.length > 0 && notification.target.startsWith("circles/")) || notification.from.email === user?.email)
                 return NOTIFICATIONS.doc(snap.id).update({result: "Already invited"})
             if (snapshot.docs?.length > 0)
                 return NOTIFICATIONS.doc(snap.id).update({
