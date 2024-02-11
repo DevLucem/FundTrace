@@ -4,6 +4,7 @@ initializeApp();
 
 const functions = require('firebase-functions');
 const nodeMailer = require('nodemailer');
+const emailConfig = require('./emailConfig.json');
 
 const FIRESTORE = getFirestore();
 const USERS = FIRESTORE.collection("users");
@@ -135,14 +136,7 @@ exports.transactionDeleted = functions.firestore
 
 const sendNotification = (subject, message, to) => {
 
-    nodeMailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 486,
-        auth: {
-            user: 'lucem024',
-            pass: 'prey emhe ubzn ugqx'
-        }
-    }).sendMail({
+    nodeMailer.createTransport(emailConfig).sendMail({
         from: '"FundTrace" <noreply@fundtrace.web.app>',
         to, subject,
         text: message,
