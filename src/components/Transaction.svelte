@@ -12,11 +12,11 @@
         <p class="text-xs">{transaction.time.toLocaleString()}</p>
     </div>
     <div class="flex border-y border-r border-primary rounded-r-xl pr-4">
-        <p class="text-xs text-end my-auto">
+        <p class="font-bold text-2xl" class:text-green-500={transaction.amount>0} class:text-red-500={transaction.amount<0} >{transaction.amount.toLocaleString("en-US", {maximumFractionDigits: 8})}</p>
+        <p class="text-xs text-start my-auto pl-4">
             <span class="text-xs">{transaction.currency}</span>
             <br>
-            <span>{transaction.fee || 0}</span>
+            <span class:text-green-500={(transaction.fee || 0) < 0} class:text-red-500={(transaction.fee || 0) > 0}>{transaction.fee || 0}</span>
         </p>
-        <p class="{transaction.amount>=0? 'text-green-500': 'text-red-500'} font-bold text-2xl">{transaction.amount}</p>
     </div>
 </div>
