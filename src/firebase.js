@@ -2,7 +2,7 @@ import {initializeApp} from "firebase/app";
 import {getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, updateEmail, signOut} from "firebase/auth"
 import {getFirestore, enableIndexedDbPersistence, onSnapshot, serverTimestamp, collection, setDoc, doc, deleteDoc, query, where, arrayRemove, deleteField} from 'firebase/firestore'
 
-const firebaseConfig = require('./firebaseConfig.json');
+import firebaseConfig from "./firebaseConfig.json";
 initializeApp(firebaseConfig);
 
 const AUTH = getAuth()
