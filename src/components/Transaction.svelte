@@ -13,7 +13,7 @@
     </div>
     <div class="flex border-y border-r border-primary rounded-r-xl pr-4">
         <p class="font-bold text-2xl" class:text-green-500={transaction.amount>0} class:text-red-500={transaction.amount<0} >{transaction.amount.toLocaleString("en-US", {maximumFractionDigits: 8})}</p>
-        <p class="text-xs text-start my-auto pl-4">
+        <p class="text-xs text-start my-auto pl-1">
             <span class="text-xs">{transaction.currency}</span>
             <br>
             <span class:text-green-500={(transaction.fee || 0) < 0} class:text-red-500={(transaction.fee || 0) > 0}>{transaction.fee || 0}</span>
