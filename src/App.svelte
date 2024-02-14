@@ -36,31 +36,23 @@
         circles = [], circlesListener;
 
     let transactions = [], filter = {
+        search: "", account: "", tags: [],
         filter: () => {
-            if (!filter.search) return transactions = allTransactions;
+            if (!filter.search && !filter.account && filter.tags.length<1) return transactions = allTransactions;
             filter.search = filter.search.toLowerCase();
-            filter.tags = filter.search.match(/#(\w+)/g)?.map(tag => tag.slice(1));
-            filter.account = filter.search.match(/account:(\w+)/)?.[1];
-            if (filter.account) filter.accounts = accounts.filter(account => account.name.toLowerCase().includes(filter.account));
-            filter.name = filter.search.replace(/#(\w+)/g, "")
-                .replace(/account:(\w+)/, "")
-                .trim().toLowerCase();
             transactions = allTransactions.filter(transaction => {
-                if (filter.tags && filter.tags.length) {
-                    let tags = transaction.tags || [];
-                    if (!filter.tags.every(tag => tags.includes(tag))) return false;
-                }
-                if (filter.accounts && filter.accounts.length) {
-                    if (!filter.accounts.some(account => account.id === transaction.account)) return false;
-                }
-                if (filter.name && !transaction.name.toLowerCase().includes(filter.name)) return false;
-                return true;
+                return (!filter.account || filter.account === transaction.account) && !(filter.search && !transaction.name.toLowerCase().includes(filter.search));
             });
         }
     };
-    $: if (filter.search) filter.filter();
+    $: if (filter) filter.filter();
+    $: console.log(filter);
 
-    let user; $: if (user) {
+    let oldUser;
+    let user; $: if (user && user!==oldUser) {
+
+        oldUser = user;
+        console.log("####### User Update");
 
         if (accountsListener) accountsListener();
         accountsListener = listenData("accounts", result => {
@@ -125,8 +117,26 @@
                 </svg>
             </button>
 
-            <div class="card w-[300px] absolute hidden right-24 focus-within:block group-hover:block">
+            <div class="card flex-1 hidden absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
                 <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search">
+                <div class="horizontal-view my-2">
+                    {#each filter.tags as tag}
+                        <div class="flex pill">
+                            <p class="px-1">{tag}</p>
+                            <button on:click={() => filter.tags = filter.tags.filter(t => t !== tag)} class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    {/each}
+                </div>
+                <select bind:value={filter.account}>
+                    <option value="">All Accounts</option>
+                    {#each accounts as account}
+                        <option value={account.id}>{account.name}</option>
+                    {/each}
+                </select>
             </div>
 
         </div>
