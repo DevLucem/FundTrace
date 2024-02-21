@@ -44,7 +44,7 @@
             {#each circles as circle}
                 <div class="card row items-center justify-between p-2 m-2" style="background-color: {circle[user.id].color}">
                     <img src={circle[user.id].photoURL} alt="user" class="mx-4 rounded-full bg-primary w-6 h-6"/>
-                    <h3>{circle[user.id].displayName}</h3>
+                    <h3 class="text-start leading-3">{circle[user.id].displayName} <br> <span class="text-xs">{circle[user.id].email}</span></h3>
                     <div class="flex-1"></div>
                 </div>
             {/each}

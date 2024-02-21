@@ -38,10 +38,20 @@
     let transactions = [], filter = {
         search: "", account: "", tags: [],
         filter: () => {
-            if (!filter.search && !filter.account && filter.tags.length<1) return transactions = allTransactions;
+
+            console.log(!filter.search, !filter.account, filter.tags.length<1, !filter.min, !filter.max, !filter.start, !filter.end);
+            if (!filter.search && !filter.account && filter.tags.length<1 && !filter.min && !filter.max && !filter.start && !filter.end) return transactions = allTransactions;
+
             filter.search = filter.search.toLowerCase();
             transactions = allTransactions.filter(transaction => {
-                return (!filter.account || filter.account === transaction.account) && !(filter.search && !transaction.name.toLowerCase().includes(filter.search));
+
+                const name = !(filter.search && !transaction.name.toLowerCase().includes(filter.search))
+                const amount = (!filter.min || Math.abs(transaction.amount) >= filter.min) && (!filter.max || Math.abs(transaction.amount) <= filter.max);
+                const date = (!filter.start || transaction.time >= new Date(filter.start)) && (!filter.end || transaction.time <= new Date(filter.end));
+                const account = (!filter.account || filter.account === transaction.account);
+
+                return name && amount && date && account;
+
             });
         }
     };
@@ -117,9 +127,10 @@
                 </svg>
             </button>
 
-            <div class="card flex-1 hidden absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
+            <form class="card hidden flex-1 absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
                 <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search">
-                <div class="horizontal-view my-2">
+
+                <div class="horizontal-view my-2 justify-between">
                     {#each filter.tags as tag}
                         <div class="flex pill">
                             <p class="px-1">{tag}</p>
@@ -131,13 +142,30 @@
                         </div>
                     {/each}
                 </div>
-                <select bind:value={filter.account}>
-                    <option value="">All Accounts</option>
-                    {#each accounts as account}
-                        <option value={account.id}>{account.name}</option>
-                    {/each}
-                </select>
-            </div>
+
+                <div class="horizontal-view w-full justify-between mt-2">
+                    <h2 class="w-1/4">Amount:</h2>
+                    <input type="number" bind:value={filter.min} class="w-1/3 mx-1" placeholder="Min">
+                    <input type="number" bind:value={filter.max} class="w-1/3 mx-1" placeholder="Max">
+                </div>
+
+                <div class="horizontal-view w-full justify-between mt-2">
+                    <h2 class="w-1/4">Dates:</h2>
+                    <input type="date" bind:value={filter.start} class="w-1/3 mx-1" placeholder="Start">
+                    <input type="date" bind:value={filter.end} class="w-1/3 mx-1" placeholder="End">
+                </div>
+
+                <div class="horizontal-view w-full justify-between mt-2">
+                    <select bind:value={filter.account}>
+                        <option value="">All Accounts</option>
+                        {#each accounts as account}
+                            <option value={account.id}>{account.name}</option>
+                        {/each}
+                    </select>
+                    <button type="reset">Clear</button>
+                </div>
+
+            </form>
 
         </div>
 

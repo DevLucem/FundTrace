@@ -1,6 +1,6 @@
 import {initializeApp} from "firebase/app";
 import {getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, updateEmail, signOut} from "firebase/auth"
-import {getFirestore, enableIndexedDbPersistence, onSnapshot, serverTimestamp, collection, setDoc, doc, deleteDoc, query, where, arrayRemove, deleteField} from 'firebase/firestore'
+import {getFirestore, enableIndexedDbPersistence, onSnapshot, serverTimestamp, collection, setDoc, doc, deleteDoc, query, where, orderBy, startAt, limit} from 'firebase/firestore'
 
 import firebaseConfig from "./firebaseConfig.json";
 initializeApp(firebaseConfig);

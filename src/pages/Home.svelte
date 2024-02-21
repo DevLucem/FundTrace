@@ -49,9 +49,9 @@
         <h2 class="font-bold">Transactions ({transactions.length})</h2>
         <div class="row my-2 overflow-x-auto flex-1 px-6 space-x-2">
             {#each Object.keys(balance) as currency}
-                <p class="pill">
+                <p class="pill min-w-fit whitespace-nowrap">
                     {currency} :
-                    <span>{balance[currency].credit}</span> / <span>{balance[currency].debit}</span>
+                    <span>{balance[currency].credit.toCurrency()}</span> / <span>{balance[currency].debit.toCurrency()}</span>
                 </p>
             {/each}
         </div>
