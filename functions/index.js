@@ -129,9 +129,13 @@ exports.transactionDeleted = functions.firestore
     .onDelete((snap, context) => {
         const data = snap.data();
         if (!data.account) return null;
-        return ACCOUNTS.doc(data.account).update({
-            [`balance.${data.currency}`]: FieldValue.increment(-data.amount + (data.fee || 0))
-        });
+        // check if account exists
+        return ACCOUNTS.doc(data.account).get().then(snapshot => {
+            if (!snapshot.exists) return null;
+            return snapshot.ref.update({
+                [`balance.${data.currency}`]: FieldValue.increment(-data.amount + (data.fee || 0))
+            });
+        })
     });
 
 const sendNotification = (subject, message, to) => {
