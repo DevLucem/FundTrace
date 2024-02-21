@@ -107,7 +107,7 @@
         {#if create.type === "transaction"}
             <div class="row justify-between">
                 <select class="w-1/2" disabled={create.id} name="Account" bind:value={create.account} on:change={setAccountDefaults}>
-                    <option value=""></option>
+                    <option value="">No Account</option>
                     {#each accounts.filter(a => (a.access[user.id] || 0)>1) as account}
                         <option value={account.id}>{account.name}</option>
                     {/each}
