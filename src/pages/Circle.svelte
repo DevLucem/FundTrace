@@ -9,7 +9,8 @@
 
     const update = () => {
         const email = prompt('Enter new email address');
-        if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return alert("Invalid email address");
+        if (!email) return;
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return alert("Invalid email address");
         if (email && email !== user.email && confirm(`Change email to ${email}?`))
             updateUser(email).then(() => {
                 saveData('users', {id: user.id, email}).then(() => {

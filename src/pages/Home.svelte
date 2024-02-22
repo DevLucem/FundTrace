@@ -9,11 +9,13 @@
     export let accounts, transactions;
 
     // Calculate the money in/out of each currency in all transactions
-    let balance = {}; transactions.forEach(transaction => {
-        if (!balance[transaction.currency]) balance[transaction.currency] = {credit: 0, debit: 0};
-        if (transaction.amount > 0) balance[transaction.currency].credit += transaction.amount;
-        else balance[transaction.currency].debit += transaction.amount;
-    })
+    let balance = {}; $: { balance = {};
+        transactions.forEach(transaction => {
+            if (!balance[transaction.currency]) balance[transaction.currency] = {credit: 0, debit: 0};
+            if (transaction.amount > 0) balance[transaction.currency].credit += transaction.amount;
+            else balance[transaction.currency].debit += transaction.amount;
+        })
+    }
 </script>
 
 <div>
@@ -51,7 +53,7 @@
             {#each Object.keys(balance) as currency}
                 <p class="pill min-w-fit whitespace-nowrap">
                     {currency} :
-                    <span>{balance[currency].credit.toCurrency()}</span> / <span>{balance[currency].debit.toCurrency()}</span>
+                    <span>{balance[currency].credit.toCurrency()}</span> / <span class="bg-fade -my-1 px-1 py-0.5 rounded-bl-full rounded-r-full -mr-1">{balance[currency].debit.toCurrency()}</span>
                 </p>
             {/each}
         </div>

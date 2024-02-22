@@ -32,7 +32,7 @@
     const scanTags = () => {
         let tags = create.name.match(/#\w+/g);
         if (tags) {
-            create.tags.join(tags.map(tag => {return tag.replace('#', '')}));
+            create.tags = [...create.tags, ...tags.map(tag => {return tag.replace('#', '')})];
             create.name = create.name.replace(/#\w+/g, '');
         }
     }
@@ -93,7 +93,7 @@
             {#each create.tags as tag}
                 <div class="flex pill">
                     <p class="px-1">{tag}</p>
-                    <button on:click={() => create.tags = create.tags.filter(t => t !== tag)} class="icon">
+                    <button type="button" on:click={() => create.tags = create.tags.filter(t => t !== tag)} class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>

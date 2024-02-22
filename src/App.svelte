@@ -37,6 +37,13 @@
 
     let transactions = [], filter = {
         search: "", account: "", tags: [],
+        scanTags: () => {
+            let tags = filter.search.match(/#\w+/g);
+            if (tags) {
+                filter.tags = [...filter.tags, ...tags.map(tag => {return tag.replace('#', '')})];
+                filter.search = filter.search.replace(/#\w+/g, '');
+            }
+        },
         filter: () => {
 
             console.log(!filter.search, !filter.account, filter.tags.length<1, !filter.min, !filter.max, !filter.start, !filter.end);
@@ -45,12 +52,13 @@
             filter.search = filter.search.toLowerCase();
             transactions = allTransactions.filter(transaction => {
 
-                const name = !(filter.search && !transaction.name.toLowerCase().includes(filter.search))
+                const name = !(filter.search && !transaction.name.toLowerCase().includes(filter.search));
+                const tags = filter.tags.length < 1 || filter.tags.every(tag => transaction.tags?.includes(tag));
                 const amount = (!filter.min || Math.abs(transaction.amount) >= filter.min) && (!filter.max || Math.abs(transaction.amount) <= filter.max);
                 const date = (!filter.start || transaction.time >= new Date(filter.start)) && (!filter.end || transaction.time <= new Date(filter.end));
                 const account = (!filter.account || filter.account === transaction.account);
 
-                return name && amount && date && account;
+                return name && tags && amount && date && account;
 
             });
         }
@@ -89,7 +97,8 @@
 
         if (!target) return alert("Select something to invite user");
         if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) email = prompt("Enter user email to invite", email);
-        if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return alert("Invalid email address");
+        if (!email) return;
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return alert("Invalid email address");
         email = email.toLowerCase().trim();
 
         loading = true;
@@ -128,7 +137,7 @@
             </button>
 
             <form class="card hidden flex-1 absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
-                <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search">
+                <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search" on:change={filter.scanTags}>
 
                 <div class="horizontal-view my-2 justify-between">
                     {#each filter.tags as tag}
