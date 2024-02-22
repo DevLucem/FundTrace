@@ -1,7 +1,7 @@
 <script>
     import {createEventDispatcher, onDestroy} from "svelte";
     const emit = createEventDispatcher();
-    import {listenData, saveData} from "../firebase";
+    import {listenData, saveData, allowNotifications} from "../firebase";
 
     export const tab = "notification";
     export let user;
@@ -27,6 +27,14 @@
 
     onDestroy(() => {if (notificationsListener) notificationsListener();});
 </script>
+
+
+{#if Notification.permission === 'default'}
+    <div class="flex justify-between card">
+        <h1>Allow Push Notifications</h1>
+        <button on:click={allowNotifications} class="rounded bg-white text-primary px-4 py-1">Allow</button>
+    </div>
+{/if}
 
 <ul>
     {#each notifications as notification}

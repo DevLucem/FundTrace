@@ -1,10 +1,16 @@
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore, FieldValue} = require('firebase-admin/firestore');
-initializeApp();
+const {onRequest} = require("firebase-functions/v2/https");
+const logger = require("firebase-functions/logger");
+
+const app = initializeApp();
 
 const functions = require('firebase-functions');
 const nodeMailer = require('nodemailer');
 const emailConfig = require('./emailConfig.json');
+
+const {getMessaging} = require("firebase-admin/messaging");
+const messaging = getMessaging(app);
 
 const FIRESTORE = getFirestore();
 const USERS = FIRESTORE.collection("users");
@@ -140,10 +146,32 @@ exports.transactionDeleted = functions.firestore
 
 const sendNotification = (subject, message, to) => {
     console.log("Sending Email", to, subject, message);
-    return new Promise((resolve, reject) => {
+
+    if (to.token) {
+
+        logger.info("Test Notification", {structuredData: true});
+        return messaging.send({
+            notification: {
+                title: subject,
+                body: message
+            },
+            data: {
+                url: "https://fundtrace.web.app/notification",
+                tag: "notification",
+            },
+            to: to.token,
+            webpush: {
+                fcm_options: {
+                    link: "https://fundtrace.web.app/notification",
+                }
+            }
+        }).catch(error => {
+            logger.error("Error sending notification:", error, {structuredData: true});
+        });
+    } else return new Promise((resolve, reject) => {
         return nodeMailer.createTransport(emailConfig).sendMail({
             from: '"FundTrace" <noreply@fundtrace.web.app>',
-            to, subject,
+            to: to.email, subject,
             text: message,
             html: message
         }, (error, info) => {
@@ -156,18 +184,26 @@ const sendNotification = (subject, message, to) => {
 exports.notification = functions.firestore
     .document('notifications/{id}').onCreate((snap, context) => {
         const notification = snap.data();
-        if (notification.user) return sendNotification(notification.title, notification.message, notification.contact);
+        if (notification.user) return sendNotification(notification.title, notification.message, {email: notification.contact});
         return Promise.all([USERS.where("email", "==", notification.contact).get(), CIRCLES.where(`${notification.from.id}.email`, '==', notification.contact)]).then(([snapshot, circle]) => {
             const user = snapshot.docs[0]?.data();
-            if ((circle.docs?.length > 0 && notification.target.startsWith("circles/")) || notification.from.email === user?.email)
-                return NOTIFICATIONS.doc(snap.id).update({result: "Already invited"})
-            if (snapshot.docs?.length > 0)
-                return NOTIFICATIONS.doc(snap.id).update({
+
+            let updates = {"delete": new Date().setDate(new Date().getDate() + 14)}; let notify = true;
+            if ((circle.docs?.length > 0 && notification.target.startsWith("circles/")) || notification.from.email === user?.email) {
+                updates.result = "Already invited"
+                notify = false;
+            }
+            if (snapshot.docs?.length > 0) {
+                updates = {...updates,
                     users: FieldValue.arrayUnion(user.id),
                     [`access.${user.id}`]: 4,
                     to: {id: user.id, displayName: user.displayName, photoURL: user.photoURL, email: user.email}
-                });
-            else return sendNotification(notification.title, notification.message, notification.contact);
+                }
+            }
+            return NOTIFICATIONS.doc(snap.id).update(updates).then(() => {
+                if (notify) return sendNotification(notification.title, notification.message, {token: user.token, email: notification.contact});
+                else return null;
+            });
         }).catch(console.error);
     });
 
@@ -203,7 +239,7 @@ exports.notificationUpdated = functions.firestore
         return null;
     });
 
-exports.test = functions.https.onRequest((req, res) => {
+exports.test = onRequest((req, res) => {
 
     res.send({
         headers: req.headers,

@@ -1,9 +1,10 @@
 import {initializeApp} from "firebase/app";
 import {getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, updateEmail, signOut} from "firebase/auth"
 import {getFirestore, enableIndexedDbPersistence, onSnapshot, serverTimestamp, collection, setDoc, doc, deleteDoc, query, where, orderBy, startAt, limit} from 'firebase/firestore'
+import { getMessaging, getToken } from "firebase/messaging";
 
 import firebaseConfig from "./firebaseConfig.json";
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
 const AUTH = getAuth()
 export const logIn = () => {return signInWithPopup(AUTH, new GoogleAuthProvider())}
@@ -66,3 +67,21 @@ export const listenData = (path, callback) => {
 export const deleteData = (path, id) => {
     return deleteDoc(doc(collection(FIRESTORE, path), id));
 }
+
+const messaging = getMessaging(app);
+const granted = Notification.permission === "granted";
+export const allowNotifications = () => {
+    onAuthStateChanged(AUTH, user => {
+        navigator.serviceWorker.getRegistration("/serviceWorker.js").then(registration => {
+            if (user && Notification.permission !== "denied")
+                getToken(messaging, {
+                    vapidKey: "BAMKuuOp2DhCMeGhcRaC_DkGjA5Ue_8hXioZj0b3M9vW2IR8DKkzyugtVEcZS73hYSZ0ClmgJjaP2cGYQLExe7w",
+                    serviceWorkerRegistration: registration
+                }).then(token => {
+                    console.log('Token:', token);
+                    saveData('users', {id: user.uid, token: token}).catch(console.error);
+                }).catch(console.error).finally(() => {if (!granted) location.reload()});
+        });
+    })
+}
+if (granted) allowNotifications();
