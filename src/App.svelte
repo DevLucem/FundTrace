@@ -108,7 +108,7 @@
             title: "Fund Trace Invite",
             type: "notification",
             contact: email,
-            message: "You have been invited on Fund Trace. Login with the same email address to join Fund Trace and be added to an account. <a href='https://fundtrace.web.app/notifications'>https://fundtrace.web.app/notifications</a>",
+            message: "You have been invited on Fund Trace. Login with the same email address to join Fund Trace and be added to an account. <a href='https://fundtrace.web.app/notification'>https://fundtrace.web.app/notification</a>",
         }).then(() => alert("Invitation sent to " + email))
             .catch(console.error)
             .finally(() => loading = false);

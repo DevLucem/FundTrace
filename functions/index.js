@@ -21,7 +21,7 @@ const NOTIFICATIONS = FIRESTORE.collection("notifications");
 
 exports.userCreated = functions.auth
     .user().onCreate((user) => {
-        NOTIFICATIONS.where("contact", "==", user.email.toLowerCase()).get().then(snapshot => {
+        return NOTIFICATIONS.where("contact", "==", user.email.toLowerCase()).get().then(snapshot => {
 
             const batch = FIRESTORE.batch();
             snapshot.docs.forEach(doc =>
@@ -159,7 +159,7 @@ const sendNotification = (subject, message, to) => {
                 url: "https://fundtrace.web.app/notification",
                 tag: "notification",
             },
-            to: to.token,
+            token: to.token,
             webpush: {
                 fcm_options: {
                     link: "https://fundtrace.web.app/notification",
@@ -201,7 +201,7 @@ exports.notification = functions.firestore
                 }
             }
             return NOTIFICATIONS.doc(snap.id).update(updates).then(() => {
-                if (notify) return sendNotification(notification.title, notification.message, {token: user.token, email: notification.contact});
+                if (notify) return sendNotification(notification.title, notification.message, {token: user?.token, email: notification.contact});
                 else return null;
             });
         }).catch(console.error);

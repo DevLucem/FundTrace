@@ -141,7 +141,10 @@
                     <input type="search" class="input lowercase" bind:value={search} placeholder="Email or Name">
                     <ul class="px-2 max-h-32 overflow-y-auto">
                         {#each uninvited as invite}
-                            <li on:click={() => create.users = [...create.users, invite[user.id].id]} on:keyup>{invite[user.id].displayName}</li>
+                            <li on:click={() => create.users = [...create.users, invite[user.id].id]} on:keyup class="flex items-center">
+                                <img src={invite[user.id].photoURL} alt="" class="w-5 h-5 bg-primary rounded-full mr-2">
+                                <p class="line-clamp-1 no-wrap">{invite[user.id].displayName}</p>
+                            </li>
                         {/each}
                     </ul>
                     {#if uninvited.length<1}
@@ -162,9 +165,15 @@
                             <div class="flex w-fit pill" style="background-color: {found[user.id].color}">
                                 {#if !create.id || (create.access[user.id] || 0) > 1}
                                     <div class="group">
-                                        <button type="button" class="icon w-5 h-5">
-                                            {create.access[id] || 1}
-                                        </button>
+
+                                        <div class="w-5 h-5 relative rounded-full">
+                                            <img src={found[user.id].photoURL} alt="" class="w-full h-full bg-primary rounded-full">
+                                            <div class="absolute top-0 w-full h-full opacity-50 bg-black rounded-full"></div>
+                                            <button type="button" class="w-5 h-5 absolute top-0">
+                                                {create.access[id] || 1}
+                                            </button>
+                                        </div>
+
                                         <div class="hidden absolute group-hover:block -mt-4">
                                             <ul class="mt-6 bg-fade px-2 py-4 rounded">
                                                 <li class="hover:text-primary" on:click={() => create.access[id] = 1} on:keydown>1. Viewer</li>

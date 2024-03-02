@@ -1,4 +1,4 @@
-let store = 'cache-v1'
+let store = 'cache-v2'
 
 const assets = [
     "/home",
