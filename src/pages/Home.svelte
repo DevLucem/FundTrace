@@ -41,7 +41,6 @@
 
 <div>
 
-
     <div class="horizontal-view p-2 mx-4 mt-4 items-center">
         <button on:click={() => emit("create", {type: "transaction"})} class="icon mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -51,10 +50,10 @@
         <h2 class="font-bold">Transactions ({transactions.length})</h2>
         <div class="row my-2 overflow-x-auto flex-1 px-6 space-x-2">
             {#each Object.keys(balance) as currency}
-                <p class="pill min-w-fit whitespace-nowrap">
-                    {currency} :
-                    <span>{balance[currency].credit.toCurrency()}</span> / <span class="bg-fade -my-1 px-1 py-0.5 rounded-bl-full rounded-r-full -mr-1">{balance[currency].debit.toCurrency()}</span>
-                </p>
+                <div class="pill group">
+                    <span class="text-fade">{balance[currency].credit.toCurrency()}</span>
+                    <span class="group-hover:inline-block hidden bg-fade -my-1 px-1 py-0.5 rounded-bl-full rounded-r-full -mr-1">{balance[currency].credit.toCurrency()} / {balance[currency].debit.toCurrency()}</span>
+                </div>
             {/each}
         </div>
     </div>

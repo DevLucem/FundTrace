@@ -61,6 +61,16 @@
                 return name && tags && amount && date && account;
 
             });
+        },
+        clear: () => {
+            filter.search = "";
+            filter.account = "";
+            filter.tags = [];
+            filter.min = "";
+            filter.max = "";
+            filter.start = "";
+            filter.end = "";
+            filter.filter();
         }
     };
     $: if (filter) filter.filter();
@@ -136,7 +146,7 @@
                 </svg>
             </button>
 
-            <form class="card hidden flex-1 absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
+            <form on:reset|preventDefault={filter.clear} class="card hidden flex-1 absolute md:w-1/2 lg:w-1/3 right-0 z-10 bg-primary focus-within:block group-hover:block">
                 <input type="search" bind:value={filter.search} class="input w-full" placeholder="Search" on:change={filter.scanTags}>
 
                 <div class="horizontal-view my-2 justify-between">

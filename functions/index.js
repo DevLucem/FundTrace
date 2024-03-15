@@ -241,27 +241,20 @@ exports.notificationUpdated = functions.firestore
 
 exports.test = onRequest((req, res) => {
 
-    res.send({
+    const request = {
         headers: req.headers,
         body: req.body,
         query: req.query,
         params: req.params,
         url: req.url,
         IP: req.ip,
-        socket: req.socket,
         source: req.get('user-agent'),
         method: req.method,
         path: req.path,
         protocol: req.protocol,
         secure: req.secure,
-        xhr: req.xhr,
-        cookies: req.cookies,
-        signedCookies: req.signedCookies,
-        baseUrl: req.baseUrl,
-        hostname: req.hostname,
-        fresh: req.fresh,
-        stale: req.stale,
-        subdomains: req.subdomains
-    });
+    }
+    console.log("Test Request", request);
+    res.send(request);
 
 });
