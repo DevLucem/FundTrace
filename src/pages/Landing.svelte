@@ -1,8 +1,17 @@
-<div class="text-center min-h-screen">
-    <h1 class="text-7xl font-bold my-24 text-primary">Fund Trace</h1>
-    <p class="text-xl max-w-2xl mx-auto">Track your financial accounts and transactions with Fund Trace.  Fund Trace is a simple, easy to use app that allows you to manage your financial accounts or transactions.  You can add, edit, and delete accounts and transactions.  You can also view reports of your transactions.</p>
+<div class="m-4">
+    <h1 class="text-lg font-bold text-center text-primary">Fund Trace</h1>
 
-    <h2 class="text-4xl font-bold my-12 text-primary">For Your Personal, Business and Chamaa Accounts</h2>
+    <img src="/gold.svg" alt="Gold">
 
-    <a href="{location.origin}/home" class="primary-button mt-48">Get Started</a>
+    <p class="text-5xl text-primary font-bold font-serif leading-snug">Track Your Wealth On The Go!</p>
+
+    <p class="text-2xl">From Cash to Shares, Funds to T-Bills, Chamaas and from Crypto to all sorts of assets.</p>
+
+    <div class="flex justify-center">
+        <a href="{location.origin}/home" class="primary-button mt-8">
+            <button class="">
+                Get Started
+            </button>
+        </a>
+    </div>
 </div>
