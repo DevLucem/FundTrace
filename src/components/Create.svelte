@@ -54,18 +54,18 @@
         })
     }
 
-    const save = () => {
+    const save = (leave=false) => {
         if (create.time) create.time = new Date(create.time);
         create.users = create.users.filter(u => {return u.length>0});
         emit('loading', true);
-        saveData(create.type + 's', create).catch(console.error).finally(() => {
+        saveData(create.type + 's', create, leave).catch(console.error).finally(() => {
             emit('loading', false);
             emit('close');
         });
     }
 
-    const remove = () => {
-        if (confirm(`${create.type.toUpperCase()} DELETE\nAre you sure you want to delete this? This will delete for every one and it cannot be undone.`)) {
+    const deleteRecord = id => {
+        if (confirm(create.type.toUpperCase() + 'DELETE\nAre you sure you want to delete this? This will delete for every one and it cannot be undone.')) {
             emit('loading', true);
             deleteData(create.type + "s", create.id).catch(console.error).finally(() => {
                 emit('loading', false);
@@ -73,9 +73,23 @@
             })
         }
     }
+
+
+    const remove = id => {
+        if (create.access[id] > 4) return;
+        if (confirm(create.type.toUpperCase() + id? 'LEAVE\nAre you sure you want to leave?' : ' DELETE\nAre you sure you want to delete this? This will delete for every one and it cannot be undone.')) {
+            emit('loading', true);
+            let removeUser = id
+            if (!removeUser) removeUser = user.id;
+            delete create.access[removeUser]; create.users = create.users.filter(u => u !== removeUser)
+            console.log("Updated", create);
+            if (!id) save(true);
+        }
+    }
+
 </script>
 
-<form on:submit|preventDefault={save} class="card bg-white">
+<form on:submit|preventDefault={() => save()} class="card bg-white">
 
     <h1 class="title text-center">{create.type.toUpperCase()} <span class="text-xs">{create.id || ""}</span> </h1>
     <button class="absolute top-0 right-0 mr-6 mt-6 icon" on:click={() => emit("close")}>
@@ -187,7 +201,7 @@
                                 {/if}
                                 <p class="line-clamp-1 px-1">{found[user.id].displayName}</p>
                                 {#if !create.id || (create.access[user.id] || 0) > 3}
-                                    <button type="button" on:click={() => {delete create.access[id]; create.users = create.users.filter(u => u !== id)}} class="icon">
+                                    <button type="button" on:click={() => remove(id)} class="icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
@@ -207,7 +221,10 @@
 
     <div class="row justify-between space-x-2">
         {#if create.id && (create.access[user.id] || 0)>3}
-            <button type="button" class="bg-gray-400 px-4 text-white rounded flex-1" on:click={remove}>Delete</button>
+            <button type="button" class="bg-gray-400 px-4 text-white rounded flex-1" on:click={deleteRecord}>Delete</button>
+        {/if}
+        {#if create.id && (create.access[user.id] || 0)<5}
+            <button type="button" class="bg-gray-400 px-4 text-white rounded flex-1" on:click={() => remove()}>Leave</button>
         {/if}
         {#if !create.id || (create.access[user.id] || 0)>2}
             <button type="submit" class="bg-primary text-white rounded flex-1">Save</button>

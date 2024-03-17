@@ -26,7 +26,7 @@ export const logOut = () => {return signOut(AUTH)}
 
 const FIRESTORE = getFirestore()
 enableIndexedDbPersistence(FIRESTORE).catch(e => console.log(e.code === 'failed-precondition' ? 'Multiple Tabs Open' : 'Cant Cache ', e))
-export const saveData = (path, data) => {
+export const saveData = (path, data, leave=false) => {
     console.log("Saving Data", path, data);
 
     let user = AUTH.currentUser?.uid;
@@ -41,9 +41,9 @@ export const saveData = (path, data) => {
         data.created = serverTimestamp();
         data.id = doc(collection(FIRESTORE, path)).id;
     }
-    if (!data.access[user]) data.access[user] = 5;
+    if (!data.access[user] && !leave) data.access[user] = 5;
     if (data.access[user]<4) data.access[user] = 4;
-    if (!data.users.includes(user))
+    if (!data.users.includes(user) && !leave)
         data.users = [user, ...data.users];
     Object.keys(data).forEach(key => { if(data[key] === undefined) delete data[key]});
 
