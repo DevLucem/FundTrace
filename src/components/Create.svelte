@@ -76,9 +76,9 @@
 
 
     const remove = id => {
+        console.log("Remove", id, create.access[id]);
         if (create.access[id] > 4) return;
         if (confirm(create.type.toUpperCase() + !id? 'LEAVE\nAre you sure you want to leave?' : ' DELETE\nAre you sure you want to delete this? This will delete for every one and it cannot be undone.')) {
-            emit('loading', true);
             let removeUser = id
             if (!removeUser) removeUser = user.id;
             delete create.access[removeUser]; create.users = create.users.filter(u => u !== removeUser)
