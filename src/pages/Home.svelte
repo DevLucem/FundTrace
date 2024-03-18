@@ -76,7 +76,7 @@
             {#each Object.keys(balance) as currency}
                 <p class="pill group whitespace-nowrap h-fit">
                     <span class="text-primary font-bold">{currency}</span>
-                    <span>{balance[currency].credit.toCurrency()}</span>
+                    <span>{(balance[currency].credit + balance[currency].debit).toCurrency()}</span>
                     <span class="group-hover:inline-block hidden bg-fade -my-1 px-1 py-0.5 rounded-bl-full rounded-r-full -mr-1">
                         <span class="text-green-500">{balance[currency].credit.toCurrency()}</span> /
                         <span class="text-red-500">{balance[currency].debit.toCurrency()}</span>
