@@ -48,10 +48,9 @@
             console.log(!filter.search, !filter.account, filter.tags.length<1, !filter.min, !filter.max, !filter.start, !filter.end);
             if (!filter.search && !filter.account && filter.tags.length<1 && !filter.min && !filter.max && !filter.start && !filter.end) return transactions = allTransactions;
 
-            filter.search = filter.search.toLowerCase();
             transactions = allTransactions.filter(transaction => {
 
-                const name = !(filter.search && !transaction.name.toLowerCase().includes(filter.search));
+                const name = !(filter.search && !transaction.name.toLowerCase().includes(filter.search.toLowerCase()));
                 const tags = filter.tags.length < 1 || filter.tags.every(tag => transaction.tags?.includes(tag));
                 const amount = (!filter.min || Math.abs(transaction.amount) >= filter.min) && (!filter.max || Math.abs(transaction.amount) <= filter.max);
                 const date = (!filter.start || transaction.time >= new Date(filter.start)) && (!filter.end || transaction.time <= new Date(filter.end));
