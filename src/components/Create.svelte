@@ -78,7 +78,7 @@
     const remove = id => {
         console.log("Remove", id, create.access[id]);
         if (create.access[id] > 4) return;
-        if (confirm(create.type.toUpperCase() + !id? 'LEAVE\nAre you sure you want to leave?' : ' DELETE\nAre you sure you want to delete this? This will delete for every one and it cannot be undone.')) {
+        if (confirm(create.type.toUpperCase() + (!id? 'LEAVE\nAre you sure you want to leave?' : ' Remove User\nAre you sure you want to remove this user?'))) {
             let removeUser = id
             if (!removeUser) removeUser = user.id;
             delete create.access[removeUser]; create.users = create.users.filter(u => u !== removeUser)
@@ -182,10 +182,9 @@
 
                                         <div class="w-5 h-5 relative rounded-full">
                                             <img src={found[user.id].photoURL} alt="" class="w-full h-full bg-primary rounded-full">
-                                            <div class="absolute top-0 w-full h-full opacity-50 bg-black rounded-full"></div>
-                                            <button type="button" class="w-5 h-5 absolute top-0">
-                                                {create.access[id] || 1}
-                                            </button>
+                                            <div class="absolute top-0 opacity-50 bg-black rounded-full">
+                                                <button type="button" class="w-5 h-5 text-white">{create.access[id] || 1}</button>
+                                            </div>
                                         </div>
 
                                         <div class="hidden absolute group-hover:block -mt-4">
