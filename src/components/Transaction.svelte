@@ -5,11 +5,13 @@
     export let transaction;
 </script>
 
-<div class="row mr-4 mb-4 w-full hover:cursor-pointer" on:click={() => emit('create', transaction)} on:keydown>
-    <div> <div class="w-2 h-full rounded-l-xl" style="background-color: {transaction.color}"></div> </div>
-    <div class="py-1 px-4 border-y border-primary flex-1">
-        <div class="flex text-ellipsis font-bold whitespace-nowrap space-x-2 text-sm">
-            <h2>{transaction.name}</h2>
+<div class="flex w-full border-y border-r border-primary rounded-xl mb-4 hover:cursor-pointer" on:click={() => emit('create', transaction)} on:keydown>
+    <div class="flex-none">
+        <div class="w-2 h-full rounded-l-xl border-l border-y border-primary" style="background-color: {transaction.color}"></div>
+    </div>
+    <div class="flex-1 py-1 ml-2">
+        <div class="flex overflow-x-auto">
+            <h1 class="line-clamp-1">{transaction.name}</h1>
             {#each transaction.tags || [] as tag}
                 <p class="px-1 pill">{tag}</p>
             {/each}
@@ -26,12 +28,11 @@
             <p class="text-xs">{transaction.time.toLocaleString()}</p>
         </div>
     </div>
-    <div class="flex border-y border-r border-primary rounded-r-xl pr-4">
+    <div class="flex-none rounded-r-xl mr-2">
         <p class="font-bold text-2xl" class:text-green-500={transaction.amount>0} class:text-red-500={transaction.amount<0} >{transaction.amount.toCurrency()}</p>
-        <p class="text-xs text-start pl-1 pt-2">
-            <span class="text-xs">{transaction.currency}</span>
-            <br>
+        <p class="text-xs text-end">
             <span class:text-green-500={(transaction.fee || 0) < 0} class:text-red-500={(transaction.fee || 0) > 0}>{transaction.fee || 0}</span>
+            <span class="text-xs">{transaction.currency}</span>
         </p>
     </div>
 </div>
