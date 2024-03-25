@@ -147,8 +147,14 @@ exports.transactionDeleted = functions.firestore
 const sendNotification = (subject, message, to) => {
     console.log("Sending Email", to, subject, message);
 
-    if (to.token) {
+    if (!to.token && !to.email && to.id) {
+        USERS.doc(to.id).get().then(snapshot => {
+            const user = snapshot.data();
+            if (user) return sendNotification(subject, message, {token: user.token, email: user.email});
+        })
+    }
 
+    if (to.token) {
         logger.info("Test Notification", {structuredData: true});
         return messaging.send({
             notification: {
@@ -168,17 +174,20 @@ const sendNotification = (subject, message, to) => {
         }).catch(error => {
             logger.error("Error sending notification:", error, {structuredData: true});
         });
-    } else return new Promise((resolve, reject) => {
-        return nodeMailer.createTransport(emailConfig).sendMail({
-            from: '"FundTrace" <noreply@fundtrace.web.app>',
-            to: to.email, subject,
-            text: message,
-            html: message
-        }, (error, info) => {
-            if (error) reject(error);
-            return resolve(info);
+    }
+
+    if (to.email)
+        return new Promise((resolve, reject) => {
+            return nodeMailer.createTransport(emailConfig).sendMail({
+                from: '"FundTrace" <noreply@fundtrace.web.app>',
+                to: to.email, subject,
+                text: message,
+                html: message
+            }, (error, info) => {
+                if (error) reject(error);
+                return resolve(info);
+            });
         });
-    });
 }
 
 exports.notification = functions.firestore
@@ -201,7 +210,7 @@ exports.notification = functions.firestore
                 }
             }
             return NOTIFICATIONS.doc(snap.id).update(updates).then(() => {
-                if (notify) return sendNotification(notification.title, notification.message, {token: user?.token, email: notification.contact});
+                if (notify) return sendNotification(notification.title, notification.message, {token: user?.token, email: user?.token? null: notification.contact});
                 else return null;
             });
         }).catch(console.error);
@@ -231,9 +240,16 @@ exports.notificationUpdated = functions.firestore
                 if (!notification.target.startsWith("circles/"))
                     batch.update(FIRESTORE.doc(notification.target), {users: FieldValue.arrayUnion(notification.to.id)});
 
-                return batch.commit();
+                return batch.commit().then(() => {
+                    return sendNotification("Accepted", "Your request has been accepted", {id: notification.from.id});
+                });
 
             }).catch(console.error);
+        }
+
+        if (notification.result === "rejected") {
+            console.log(notification.id, "Notification Rejected", notification.target);
+            return sendNotification("Rejected", "Your request has been rejected", {id: notification.from.id});
         }
 
         return null;

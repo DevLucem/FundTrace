@@ -16,8 +16,9 @@
     let balance = {}; $: { balance = {};
         transactions.forEach(transaction => {
             if (!balance[transaction.currency]) balance[transaction.currency] = {credit: 0, debit: 0};
-            if (transaction.amount > 0) balance[transaction.currency].credit += transaction.amount;
-            else balance[transaction.currency].debit += transaction.amount;
+            let fee = transaction.fee || 0;
+            if (transaction.amount > 0) balance[transaction.currency].credit += transaction.amount - fee;
+            else balance[transaction.currency].debit += transaction.amount + fee;
         })
     }
 </script>
