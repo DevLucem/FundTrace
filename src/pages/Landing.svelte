@@ -1,13 +1,13 @@
 <div>
-    <div class="p-4 h-screen md:flex">
+    <div class="p-4 mb-8">
 
-        <img class="md:w-1/2" src="/gold.svg" alt="Gold">
+        <img class="md:max-w-[50vw] mx-auto" src="/gold.svg" alt="Gold">
 
-        <div class="flex flex-col flex-1 items-center justify-center">
+        <div class="flex flex-col flex-1 items-center justify-center text-center">
             <p class="text-5xl text-primary font-bold font-serif leading-snug">Track Your Wealth On The Go!</p>
             <p class="text-2xl">From Cash to Shares, Funds to T-Bills, Chamaas and from Crypto to all sorts of assets.</p>
             <div class="flex justify-center mt-24">
-                <a href="{location.origin}/home" class="primary-button mt-8">Get Started</a>
+                <a href="{location.origin}/home" class="primary-button mt-8">Sign In</a>
             </div>
         </div>
 
@@ -17,7 +17,7 @@
 
         <h2 class="text-2xl font-bold text-center">Why You'll Love Fund Trace</h2>
 
-        <div class="grid space-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="grid space-x-2 grid-cols-1 sm:grid-cols-3 lg:grid-cols-3">
             <div class="flex flex-col my-8 items-center bg-fade p-4 rounded-lg text-center">
                 <img class="h-32" src="/growth.png" alt="Growth">
                 <div>
